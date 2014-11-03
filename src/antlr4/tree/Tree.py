@@ -55,7 +55,32 @@ class ErrorNode(TerminalNode):
     pass
 
 class ParseTreeVisitor(object):
-    pass
+
+    def visit(self, t:ParseTree):
+        return t.accept(self)
+
+    def visitChildren(self, node:RuleNode):
+        result = self.defaultResult()
+        n = node.getChildCount()
+        for i in range(0, n):
+            if not self.shouldVisitNextChild(node, result):
+                break
+            c = node.getChild(i)
+            childResult = c.accept(self)
+            result = self.aggregateResult(result, childResult)
+        return result
+
+    def visitTerminal(self, node:RuleNode):
+        return self.defaultResult()
+
+    def defaultResult(self):
+        return None
+
+    def aggregateResult(self, aggregate, next_result):
+        return next_result
+
+    def shouldVisitNextChild(self, node:RuleNode, result):
+        return True
 
 ParserRuleContext = None
 
